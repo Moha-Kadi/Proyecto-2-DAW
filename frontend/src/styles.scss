@@ -1,0 +1,24 @@
+/* Variables globales de layout */
+:root {
+  --header-height: 64px;
+}
+
+/* Reset basico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilos base del body */
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #fafafa;
+  color: #121212;
+  line-height: 1.5;
+}
+
+/* Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

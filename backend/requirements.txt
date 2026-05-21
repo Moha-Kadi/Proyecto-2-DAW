@@ -1,6 +1,9 @@
+# Framework web
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
+# Base de datos
 motor==3.3.2
 pymongo==4.6.3
+# Rate limiting y variables de entorno
 slowapi==0.1.9
 python-dotenv==1.0.0
