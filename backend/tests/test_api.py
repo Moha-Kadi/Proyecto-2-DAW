@@ -1,6 +1,20 @@
-# Tests de la API
+# Tests basicos de la API
+import os
+from unittest.mock import AsyncMock, MagicMock, patch
+
+# Variables de entorno para tests
+os.environ["MONGO_URI"] = "mongodb://test:27017/test"
+os.environ["JWT_SECRET"] = "test"
+os.environ["ALLOWED_ORIGINS"] = "http://test"
+
+# Mock de MongoDB para no necesitar conexion real
+db_falsa = MagicMock()
+db_falsa.command = AsyncMock()
+cliente_falso = MagicMock()
+cliente_falso.get_database.return_value = db_falsa
+patch("config.config.AsyncIOMotorClient", return_value=cliente_falso).start()
+
 import pytest
-from unittest.mock import AsyncMock, patch
 from httpx import AsyncClient
 from main import app
 
@@ -18,7 +32,6 @@ async def test_raiz_funciona():
 @pytest.mark.asyncio
 async def test_health_funciona():
     """El health check responde ok y verifica la conexion a MongoDB."""
-    # Mock de db.command("ping") para simular que MongoDB responde
     with patch("main.db.command", new_callable=AsyncMock):
         async with AsyncClient(app=app, base_url="http://test") as c:
             r = await c.get("/health")
