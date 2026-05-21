@@ -4,6 +4,11 @@ uvicorn[standard]==0.27.0
 # Base de datos
 motor==3.3.2
 pymongo==4.6.3
+# Validacion y esquemas
+pydantic==2.5.3
+# Seguridad
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
 # Rate limiting y variables de entorno
 slowapi==0.1.9
 python-dotenv==1.0.0
