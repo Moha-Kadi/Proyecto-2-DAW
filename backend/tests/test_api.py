@@ -1,38 +1,28 @@
 # Tests basicos de la API
 import os
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import patch
 
-# Variables de entorno para tests
+# Variables de entorno
 os.environ["MONGO_URI"] = "mongodb://test:27017/test"
-os.environ["JWT_SECRET"] = "test"
 os.environ["ALLOWED_ORIGINS"] = "http://test"
 
-# Mock de MongoDB para no necesitar conexion real
-db_falsa = MagicMock()
-db_falsa.command = AsyncMock()
-cliente_falso = MagicMock()
-cliente_falso.get_database.return_value = db_falsa
-patch("config.config.AsyncIOMotorClient", return_value=cliente_falso).start()
+# Evita que falle al importar la app sin MongoDB real
+with patch("config.config.AsyncIOMotorClient"):
+    from main import app
 
-import pytest
-from httpx import AsyncClient
-from main import app
+from fastapi.testclient import TestClient
+
+cliente = TestClient(app)
 
 
-# Endpoint raiz
-@pytest.mark.asyncio
-async def test_raiz_funciona():
+def test_raiz_funciona():
     """La raiz responde con mensaje de bienvenida."""
-    async with AsyncClient(app=app, base_url="http://test") as c:
-        r = await c.get("/")
+    r = cliente.get("/")
     assert r.status_code == 200
 
 
-# Health check y conexion a MongoDB
-@pytest.mark.asyncio
-async def test_health_funciona():
-    """El health check responde ok y verifica la conexion a MongoDB."""
-    with patch("main.db.command", new_callable=AsyncMock):
-        async with AsyncClient(app=app, base_url="http://test") as c:
-            r = await c.get("/health")
+def test_health_funciona():
+    """El health check responde ok."""
+    with patch("main.db.command"):
+        r = cliente.get("/health")
     assert r.status_code == 200
