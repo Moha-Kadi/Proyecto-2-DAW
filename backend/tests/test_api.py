@@ -12,14 +12,14 @@ with patch("config.config.AsyncIOMotorClient"):
 
 from fastapi.testclient import TestClient
 
+# Cliente de pruebas para hacer peticiones a la API
 cliente = TestClient(app)
 
-
+# Test de los endpoints de prueba
 def test_raiz_funciona():
     """La raiz responde con mensaje de bienvenida."""
     r = cliente.get("/")
     assert r.status_code == 200
-
 
 def test_health_funciona():
     """El health check responde ok."""
