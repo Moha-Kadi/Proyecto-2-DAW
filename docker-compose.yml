@@ -1,0 +1,59 @@
+services:
+  # Proxy inverso: enruta /api/ → backends, el resto → frontend
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend-dev
+      - backend1
+      - backend2
+      - backend3
+    networks:
+      - beinnet
+
+  # Backend 1 (FastAPI + MongoDB)
+  backend1:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    networks:
+      - beinnet
+
+  # Backend 2 (replica)
+  backend2:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    networks:
+      - beinnet
+
+  # Backend 3 (replica)
+  backend3:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    networks:
+      - beinnet
+
+  # Frontend Angular
+  frontend-dev:
+    build:
+      context: ./frontend
+    expose:
+      - "4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.angular
+    networks:
+      - beinnet
+
+networks:
+  beinnet:
+    driver: bridge
