@@ -1,0 +1,15 @@
+<!-- Pagina principal -->
+<div class="w-full bg-white flex flex-col items-center justify-center p-8 text-center min-h-[calc(100vh-64px)]">
+  <h1 class="text-5xl font-black text-slate-900 leading-tight tracking-tighter mb-6">Vive la esencia<br>del futbol.</h1>
+  <p class="text-slate-500 max-w-md mx-auto mb-10">Resultados, analisis detallado y estadisticas del futbol mundial.</p>
+  <div class="flex gap-4">
+    <!-- Sin sesion: botones de registro y login -->
+    @if (!sesionActiva()) {
+      <a routerLink="/registro" class="px-8 py-4 bg-red-600 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl shadow-red-500/20 hover:scale-105 transition-transform">Unete Gratis</a>
+      <a routerLink="/login" class="px-8 py-4 bg-white text-slate-900 border border-slate-200 font-black uppercase text-[10px] tracking-widest rounded-2xl hover:bg-slate-50 transition-colors">Iniciar Sesion</a>
+    } @else {
+      <!-- Con sesion: mensaje de bienvenida -->
+      <p class="text-slate-400 text-lg font-bold">Bienvenido, {{ auth.usuarioActual()?.account?.username }}</p>
+    }
+  </div>
+</div>
