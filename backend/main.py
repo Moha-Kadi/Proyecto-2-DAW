@@ -4,17 +4,18 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from routes.auth import router as auth_router
 from config.config import db, ALLOWED_ORIGINS
 from dependencies.limitador import limitador
 
-# Crea la app FastAPI
+# Aplicacion FastAPI
 app = FastAPI()
 
-# Limitador, devuelve 429 cuando se excede el limite de peticiones
+# Rate limiting global
 app.state.limiter = limitador
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# CORS: permite peticiones desde los origenes definidos en ALLOWED_ORIGINS
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS.split(","),
@@ -23,7 +24,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Endpoints de prueba
+# Rutas
+app.include_router(auth_router)
+
+# Endpoints basicos
 @app.get("/")
 async def root():
     return {"status": "Beinscore API Running"}
