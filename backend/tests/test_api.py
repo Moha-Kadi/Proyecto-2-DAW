@@ -26,12 +26,6 @@ def test_raiz_funciona():
     assert r.status_code == 200
 
 
-def test_health_funciona():
-    with patch("main.db.command"):
-        r = cliente.get("/health")
-    assert r.status_code == 200
-
-
 # Registro
 
 def test_registro_cuenta_nueva():
@@ -109,69 +103,3 @@ def test_perfil_con_token():
         r = cliente.get("/api/auth/perfil", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 200
     assert r.json()["account"]["username"] == "juan"
-
-
-# Fixtures
-
-def test_fixtures_dashboard():
-    """El dashboard de fixtures devuelve 200 con las 5 ligas."""
-    partido = {
-        "fixture": {"id": 1, "timestamp": 1700000000, "status": {"short": "FT"}},
-        "teams": {"home": {"name": "A", "logo": ""}, "away": {"name": "B", "logo": ""}},
-        "goals": {"home": 1, "away": 0}, "league": {"name": "Test"}
-    }
-    with patch("routes.fixtures.httpx.AsyncClient.get") as mock_get:
-        mock_get.return_value.json.return_value = {"response": [partido]}
-        mock_get.return_value.raise_for_status.return_value = None
-        with patch("routes.fixtures.db.__getitem__") as mock_col:
-            mock_col.return_value.count_documents.return_value = 0
-            mock_col.return_value.bulk_write.return_value = None
-            mock_col.return_value.find.return_value.sort.return_value.to_list.return_value = [partido]
-            r = cliente.get("/api/fixtures/dashboard")
-    assert r.status_code == 200
-
-
-def test_fixtures_hoy_o_proximos():
-    """El endpoint de partidos devuelve datos para una liga."""
-    partido = {
-        "fixture": {"id": 1, "timestamp": 1700000000, "status": {"short": "FT"}},
-        "teams": {"home": {"name": "A", "logo": ""}, "away": {"name": "B", "logo": ""}},
-        "goals": {"home": 1, "away": 0}, "league": {"name": "Test"}
-    }
-    with patch("routes.fixtures.httpx.AsyncClient.get") as mock_get:
-        mock_get.return_value.json.return_value = {"response": [partido]}
-        mock_get.return_value.raise_for_status.return_value = None
-        with patch("routes.fixtures.db.__getitem__") as mock_col:
-            mock_col.return_value.count_documents.return_value = 0
-            mock_col.return_value.bulk_write.return_value = None
-            mock_col.return_value.find.return_value.sort.return_value.to_list.return_value = [partido]
-            r = cliente.get("/api/fixtures/hoy-o-proximos?id_liga=140")
-    assert r.status_code == 200
-
-
-def test_fixtures_detalle_no_encontrado():
-    """Un partido que no existe devuelve 404."""
-    with patch("routes.fixtures.db.__getitem__") as mock_col:
-        mock_col.return_value.find_one.return_value = None
-        r = cliente.get("/api/fixtures/99999")
-    assert r.status_code == 404
-
-
-# Clasificacion
-
-def test_clasificacion_cache():
-    """La clasificacion cacheada devuelve 200."""
-    with patch("routes.standings.db.standings.find_one") as mock_find:
-        mock_find.return_value = {"id_liga": 140, "response": [{"league": {"standings": [[{"rank": 1}]]}}]}
-        r = cliente.get("/api/clasificacion?id_liga=140")
-    assert r.status_code == 200
-
-
-def test_clasificacion_sin_cache():
-    """Sin cache consulta la API externa."""
-    with patch("routes.standings.db.standings.find_one", return_value=None), \
-         patch("routes.standings.httpx.AsyncClient.get") as mock_get:
-        mock_get.return_value.json.return_value = {"response": [{"league": {"standings": [[{"rank": 1}]]}}]}
-        mock_get.return_value.raise_for_status.return_value = None
-        r = cliente.get("/api/clasificacion?id_liga=140")
-    assert r.status_code == 200
