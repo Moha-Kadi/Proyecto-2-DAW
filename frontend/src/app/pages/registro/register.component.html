@@ -1,0 +1,90 @@
+<!-- Pagina de registro -->
+<div class="min-h-screen flex bg-white">
+  
+  <!-- Panel izquierdo (escritorio) -->
+  <div class="hidden lg:flex lg:w-5/12 bg-gray-900 p-16 flex-col justify-center">
+    <div class="max-w-sm">
+      <div class="mb-12">
+        <span class="text-white font-black text-2xl italic tracking-tighter">BeinScore</span>
+      </div>
+      <h1 class="text-4xl font-bold text-white mb-6 leading-tight">
+        Unete a la mejor plataforma deportiva.
+      </h1>
+      <p class="text-gray-400 text-base">
+        Registrate gratis para acceder a datos exclusivos y analisis detallados de las ligas mas importantes.
+      </p>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="w-full lg:w-7/12 flex items-center justify-center p-8">
+    <div class="w-full max-w-sm">
+      
+      <div class="mb-10 lg:hidden">
+        <span class="text-red-600 font-black text-xl italic tracking-tighter">BeinScore</span>
+      </div>
+
+      <div class="mb-8">
+        <h2 class="text-2xl font-bold text-gray-900">Crear Cuenta</h2>
+        <p class="text-sm text-gray-500 mt-1">Registrate para continuar</p>
+      </div>
+
+      <form (ngSubmit)="enviar()" class="space-y-4">
+        
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Usuario</label>
+          <input type="text" name="usuario" [(ngModel)]="usuario" (blur)="mostrarErrorUsuario = true"
+            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-red-500 transition-all outline-none"
+            placeholder="nombre de usuario">
+          @if (errorUsuario) {
+            <p class="mt-1 text-xs text-red-500 font-medium">{{ errorUsuario }}</p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Email</label>
+          <input type="email" name="email" [(ngModel)]="email" (blur)="mostrarErrorEmail = true"
+            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-red-500 transition-all outline-none"
+            placeholder="correo@ejemplo.com">
+          @if (errorEmail) {
+            <p class="mt-1 text-xs text-red-500 font-medium">{{ errorEmail }}</p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Contrasena</label>
+          <input type="password" name="password" [(ngModel)]="password" (blur)="mostrarErrorPassword = true"
+            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-red-500 transition-all outline-none"
+            placeholder="........">
+          @if (errorPassword) {
+            <p class="mt-1 text-xs text-red-500 font-medium">{{ errorPassword }}</p>
+          }
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Confirmar Contrasena</label>
+          <input type="password" name="confirmarPassword" [(ngModel)]="confirmarPassword" (blur)="mostrarErrorConfirmar = true"
+            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-red-500 transition-all outline-none"
+            placeholder="........">
+          @if (errorConfirmar) {
+            <p class="mt-1 text-xs text-red-500 font-medium">{{ errorConfirmar }}</p>
+          }
+        </div>
+
+        <div class="pt-4">
+          <button type="submit" [disabled]="cargando()"
+            class="w-full py-3 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-slate-800 transition-colors disabled:opacity-50">
+            Registrarse
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-10 pt-6 border-t border-gray-100 text-center">
+        <p class="text-sm text-gray-500">
+          Ya tienes cuenta?
+          <a routerLink="/login" class="text-slate-900 font-bold hover:underline">Entrar</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
