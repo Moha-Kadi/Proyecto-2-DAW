@@ -1,0 +1,23 @@
+<!-- Barra lateral con las 5 grandes ligas -->
+<div class="p-6">
+  <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">5 Grandes Ligas</h3>
+  <nav class="space-y-2">
+    @for (liga of ligas; track liga.id) {
+    <button class="w-full flex items-center gap-4 p-3 rounded-2xl transition-all duration-200 border-none text-left"
+      [class.bg-red-50]="liga.name === ligaActiva"
+      [class.hover:bg-slate-50]="liga.name !== ligaActiva" (click)="seleccionar(liga)">
+      <div class="w-10 h-10 bg-slate-50 rounded-xl p-2 flex items-center justify-center border border-slate-100 transition-colors"
+        [class.bg-white]="liga.name === ligaActiva" [class.border-red-100]="liga.name === ligaActiva">
+        <img [src]="liga.logo" [alt]="liga.name" class="w-full h-full object-contain">
+      </div>
+      <div class="flex flex-col">
+        <span class="text-xs font-black tracking-tight transition-colors"
+          [class.text-red-600]="liga.name === ligaActiva" [class.text-slate-600]="liga.name !== ligaActiva">
+          {{ liga.name }}
+        </span>
+        <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">{{ liga.country }}</span>
+      </div>
+    </button>
+    }
+  </nav>
+</div>

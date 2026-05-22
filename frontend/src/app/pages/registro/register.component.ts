@@ -73,17 +73,14 @@ export class RegisterComponent {
     this.cargando.set(true);
 
     try {
-      // Los datos se envian anidados dentro de "account" como espera el backend
       await this.auth.registrar({
         account: { username: this.usuario, email: this.email, password: this.password }
       });
-      this.cargando.set(false);
       this.toast.exito('Cuenta creada. Redirigiendo al login...');
-      // Pequeño retraso para que el usuario vea el mensaje antes de redirigir
       setTimeout(() => this.router.navigate(['/login']), 1500);
     } catch {
-      this.cargando.set(false);
       this.toast.error('Error al registrar');
     }
+    this.cargando.set(false);
   }
 }
