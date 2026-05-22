@@ -15,6 +15,7 @@ with patch("config.config.AsyncIOMotorClient"):
 
 from fastapi.testclient import TestClient
 
+# Cliente de pruebas para hacer peticiones a la API
 cliente = TestClient(app)
 
 
