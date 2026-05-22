@@ -109,3 +109,49 @@ def test_perfil_con_token():
         r = cliente.get("/api/auth/perfil", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 200
     assert r.json()["account"]["username"] == "juan"
+
+
+# Fixtures
+
+def test_fixtures_dashboard():
+    """El dashboard de fixtures devuelve 200 con las 5 ligas."""
+    partido = {
+        "fixture": {"id": 1, "timestamp": 1700000000, "status": {"short": "FT"}},
+        "teams": {"home": {"name": "A", "logo": ""}, "away": {"name": "B", "logo": ""}},
+        "goals": {"home": 1, "away": 0}, "league": {"name": "Test"}
+    }
+    with patch("routes.fixtures.httpx.AsyncClient.get") as mock_get:
+        mock_get.return_value.json.return_value = {"response": [partido]}
+        mock_get.return_value.raise_for_status.return_value = None
+        with patch("routes.fixtures.db.__getitem__") as mock_col:
+            mock_col.return_value.count_documents.return_value = 0
+            mock_col.return_value.bulk_write.return_value = None
+            mock_col.return_value.find.return_value.sort.return_value.to_list.return_value = [partido]
+            r = cliente.get("/api/fixtures/dashboard")
+    assert r.status_code == 200
+
+
+def test_fixtures_hoy_o_proximos():
+    """El endpoint de partidos devuelve datos para una liga."""
+    partido = {
+        "fixture": {"id": 1, "timestamp": 1700000000, "status": {"short": "FT"}},
+        "teams": {"home": {"name": "A", "logo": ""}, "away": {"name": "B", "logo": ""}},
+        "goals": {"home": 1, "away": 0}, "league": {"name": "Test"}
+    }
+    with patch("routes.fixtures.httpx.AsyncClient.get") as mock_get:
+        mock_get.return_value.json.return_value = {"response": [partido]}
+        mock_get.return_value.raise_for_status.return_value = None
+        with patch("routes.fixtures.db.__getitem__") as mock_col:
+            mock_col.return_value.count_documents.return_value = 0
+            mock_col.return_value.bulk_write.return_value = None
+            mock_col.return_value.find.return_value.sort.return_value.to_list.return_value = [partido]
+            r = cliente.get("/api/fixtures/hoy-o-proximos?id_liga=140")
+    assert r.status_code == 200
+
+
+def test_fixtures_detalle_no_encontrado():
+    """Un partido que no existe devuelve 404."""
+    with patch("routes.fixtures.db.__getitem__") as mock_col:
+        mock_col.return_value.find_one.return_value = None
+        r = cliente.get("/api/fixtures/99999")
+    assert r.status_code == 404
