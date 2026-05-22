@@ -155,3 +155,23 @@ def test_fixtures_detalle_no_encontrado():
         mock_col.return_value.find_one.return_value = None
         r = cliente.get("/api/fixtures/99999")
     assert r.status_code == 404
+
+
+# Clasificacion
+
+def test_clasificacion_cache():
+    """La clasificacion cacheada devuelve 200."""
+    with patch("routes.standings.db.standings.find_one") as mock_find:
+        mock_find.return_value = {"id_liga": 140, "response": [{"league": {"standings": [[{"rank": 1}]]}}]}
+        r = cliente.get("/api/clasificacion?id_liga=140")
+    assert r.status_code == 200
+
+
+def test_clasificacion_sin_cache():
+    """Sin cache consulta la API externa."""
+    with patch("routes.standings.db.standings.find_one", return_value=None), \
+         patch("routes.standings.httpx.AsyncClient.get") as mock_get:
+        mock_get.return_value.json.return_value = {"response": [{"league": {"standings": [[{"rank": 1}]]}}]}
+        mock_get.return_value.raise_for_status.return_value = None
+        r = cliente.get("/api/clasificacion?id_liga=140")
+    assert r.status_code == 200
