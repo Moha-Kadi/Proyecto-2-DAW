@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from routes.auth import router as auth_router
+from routes.fixtures import router as fixtures_router
 from config.config import db, ALLOWED_ORIGINS
 from dependencies.limitador import limitador
 
@@ -26,6 +27,7 @@ app.add_middleware(
 
 # Rutas
 app.include_router(auth_router)
+app.include_router(fixtures_router)
 
 # Endpoints basicos
 @app.get("/")
