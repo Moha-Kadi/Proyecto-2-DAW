@@ -14,6 +14,7 @@ import { LIGAS_PRINCIPALES } from '../../services/ligas.service';
 export class ScoresPageComponent implements OnInit {
   private fixtures = inject(FixturesService);
 
+  // Variables reactivas para el partido seleccionado, fecha actual, estado de carga y las ligas con sus partidos
   partidoSeleccionado = signal<any>(null);
   fechaActual = signal(new Date());
   cargando = signal(true);
@@ -44,7 +45,8 @@ export class ScoresPageComponent implements OnInit {
         return { ...liga, esHoy: res?.es_hoy ?? true, fechaProximos: res?.fecha_proximos,
           matches: res?.partidos || [] };
       }));
-    } catch { } finally { this.cargando.set(false); }
+    } catch { }
+    this.cargando.set(false);
   }
 
   // Funciones para cambiar la fecha de los partidos mostrados, ya sea al dia anterior, siguiente o a hoy
@@ -73,14 +75,17 @@ export class ScoresPageComponent implements OnInit {
     this.cargarPartidos();
   }
 
+  // Al hacer clic en un partido, obtiene su detalle completo desde el backend y lo muestra 
   async clicPartido(id: string) {
     this.cargando.set(true);
     try {
       this.partidoSeleccionado.set(await this.fixtures.obtenerDetalleCompletoPartido(id));
       window.scrollTo(0, 0);
-    } catch { } finally { this.cargando.set(false); }
+    } catch { }
+    this.cargando.set(false);
   }
 
+  // Cierra el detalle del partido seleccionado
   cerrarDetalle() {
     this.partidoSeleccionado.set(null);
   }

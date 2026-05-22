@@ -1,15 +1,114 @@
 <!-- Pagina principal -->
-<div class="w-full bg-white flex flex-col items-center justify-center p-8 text-center min-h-[calc(100vh-64px)]">
-  <h1 class="text-5xl font-black text-slate-900 leading-tight tracking-tighter mb-6">Vive la esencia<br>del futbol.</h1>
-  <p class="text-slate-500 max-w-md mx-auto mb-10">Resultados, analisis detallado y estadisticas del futbol mundial.</p>
-  <div class="flex gap-4">
-    <!-- Sin sesion: botones de registro y login -->
-    @if (!sesionActiva()) {
+<div class="flex min-h-[calc(100vh-64px)] bg-slate-50/50">
+  @if (sesionActiva()) {
+
+  <!-- Sidebar con las ligas -->
+  <aside class="w-72 bg-white border-r border-slate-200 hidden lg:block sticky top-16 h-[calc(100vh-64px)] overflow-y-auto">
+    <app-sidebar-ligas (ligaSeleccionada)="alSeleccionarLiga($event)" />
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="flex-1 p-4 lg:p-8 overflow-x-hidden">
+    <div class="max-w-6xl mx-auto">
+
+      <!-- Sidebar en movil -->
+      <div class="lg:hidden mb-6 overflow-x-auto pb-2">
+        <app-sidebar-ligas class="w-full" (ligaSeleccionada)="alSeleccionarLiga($event)" />
+      </div>
+
+      <!-- Tabla de clasificacion -->
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-6 py-6 border-b border-slate-100 flex items-center justify-between gap-4 bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+          <h2 class="text-xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+            <span class="w-1.5 h-6 bg-red-600 rounded-full"></span>
+            Clasificacion &mdash; {{ ligaSeleccionada() || 'Selecciona una liga' }}
+          </h2>
+        </div>
+
+        <!-- Cargando -->
+        @if (cargando()) {
+          <div class="p-20 text-center">
+            <div class="inline-block w-8 h-8 border-4 border-slate-100 border-t-red-600 rounded-full animate-spin"></div>
+            <p class="text-xs font-black text-slate-400 uppercase tracking-widest mt-4">Cargando datos...</p>
+          </div>
+        }
+
+        <!-- Tabla -->
+        @if (!cargando() && clasificacion().length > 0) {
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50/50">
+                  <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-12">#</th>
+                  <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Equipo</th>
+                  <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-12">PJ</th>
+                  <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-12 text-green-600">G</th>
+                  <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-12">E</th>
+                  <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-12 text-red-600">P</th>
+                  <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-16">GF:GC</th>
+                  <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-12">DG</th>
+                  <th class="px-4 py-3 text-[10px] font-black text-slate-900 uppercase tracking-widest text-center w-16 bg-slate-100/50">PTS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-50">
+                @for (row of clasificacion(); track row.team.id; let i = $index) {
+                  <tr class="group hover:bg-slate-50/50 transition-colors">
+                    <td class="px-4 py-4 text-center">
+                      <span class="text-xs font-black"
+                            [class.text-blue-600]="i < 4"
+                            [class.text-red-500]="i >= clasificacion().length - 3"
+                            [class.text-slate-300]="i >= 4 && i < clasificacion().length - 3">
+                        {{ row.rank }}
+                      </span>
+                    </td>
+                    <td class="px-4 py-4">
+                      <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-slate-50 rounded-lg p-1.5 flex items-center justify-center border border-slate-100">
+                          <img [src]="row.team.logo" [alt]="row.team.name" class="w-full h-full object-contain">
+                        </div>
+                        <span class="text-sm font-bold text-slate-700 tracking-tight">{{ row.team.name }}</span>
+                      </div>
+                    </td>
+                    <td class="px-4 py-4 text-center text-xs font-bold text-slate-500">{{ row.all.played }}</td>
+                    <td class="px-4 py-4 text-center text-xs font-bold text-slate-700">{{ row.all.win }}</td>
+                    <td class="px-4 py-4 text-center text-xs font-bold text-slate-400">{{ row.all.draw }}</td>
+                    <td class="px-4 py-4 text-center text-xs font-bold text-slate-700">{{ row.all.lose }}</td>
+                    <td class="px-4 py-4 text-center text-[10px] font-medium text-slate-600">{{ row.all.goals.for }}:{{ row.all.goals.against }}</td>
+                    <td class="px-4 py-4 text-center text-xs font-black"
+                        [class.text-green-500]="row.goalsDiff > 0"
+                        [class.text-red-500]="row.goalsDiff < 0"
+                        [class.text-slate-300]="row.goalsDiff === 0">
+                      {{ row.goalsDiff > 0 ? '+' : '' }}{{ row.goalsDiff }}
+                    </td>
+                    <td class="px-4 py-4 text-center text-sm font-black text-slate-900 bg-slate-50/30">{{ row.points }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <!-- Sin datos -->
+        @if (!cargando() && clasificacion().length === 0) {
+          <div class="p-20 text-center">
+            <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">&#9917;</div>
+            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Bienvenido</h3>
+            <p class="text-xs text-slate-400 mt-2">Selecciona una liga en el menu lateral para ver la clasificacion.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </main>
+
+  } @else {
+  <!-- Landing para invitados -->
+  <div class="w-full bg-white flex flex-col items-center justify-center p-8 text-center min-h-[calc(100vh-64px)]">
+    <h1 class="text-5xl font-black text-slate-900 leading-tight tracking-tighter mb-6">Vive la esencia<br>del futbol.</h1>
+    <p class="text-slate-500 max-w-md mx-auto mb-10">Resultados, analisis detallado y estadisticas del futbol mundial.</p>
+    <div class="flex gap-4">
       <a routerLink="/registro" class="px-8 py-4 bg-red-600 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-xl shadow-red-500/20 hover:scale-105 transition-transform">Unete Gratis</a>
       <a routerLink="/login" class="px-8 py-4 bg-white text-slate-900 border border-slate-200 font-black uppercase text-[10px] tracking-widest rounded-2xl hover:bg-slate-50 transition-colors">Iniciar Sesion</a>
-    } @else {
-      <!-- Con sesion: mensaje de bienvenida -->
-      <p class="text-slate-400 text-lg font-bold">Bienvenido, {{ auth.usuarioActual()?.account?.username }}</p>
-    }
+    </div>
   </div>
+  }
 </div>

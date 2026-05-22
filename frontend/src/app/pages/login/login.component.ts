@@ -50,19 +50,16 @@ export class LoginComponent {
 
     try {
       const resp = await this.auth.iniciarSesion({ email: this.email, password: this.password });
-      this.cargando.set(false);
-      // Guarda el token y los datos del usuario en localStorage y el signal
       this.auth.guardarSesion(resp.access_token, resp.user);
       this.toast.exito(`Bienvenido, ${resp.user.account.username}`);
       this.router.navigate(['/']);
     } catch (err: any) {
-      this.cargando.set(false);
-      // 403 = cuenta desactivada, cualquier otro error = credenciales incorrectas
       if (err?.status === 403) {
         this.toast.error('Cuenta desactivada. Contacta con el administrador.');
       } else {
         this.toast.error('Credenciales incorrectas. Verifica tu email y contrasena.');
       }
     }
+    this.cargando.set(false);
   }
 }
