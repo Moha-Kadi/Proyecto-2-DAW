@@ -4,19 +4,7 @@ import { catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-/*
- * Interceptor funcional de Angular (HttpInterceptorFn).
- *
- * Se ejecuta automaticamente en cada peticion HTTP que pasa por provideHttpClient.
- * Adjunta el token Bearer a las peticiones hacia /api/ y maneja errores 401/403.
- *
- * peticion.clone() es obligatorio porque las HttpRequest son inmutables:
- * no se pueden modificar, solo clonar con los cambios deseados.
- *
- * .pipe(catchError(...)) usa RxJS para interceptar el error antes de que
- * llegue al componente que hizo la peticion. throwError re-lanza el error
- * para que el componente tambien pueda manejarlo si lo necesita.
- */
+// Interceptor para adjuntar el token JWT a las peticiones y manejar errores de autenticacion
 export const authInterceptor: HttpInterceptorFn = (peticion, siguiente) => {
   const authService = inject(AuthService);
   const router = inject(Router);
@@ -25,23 +13,20 @@ export const authInterceptor: HttpInterceptorFn = (peticion, siguiente) => {
   // Clona la peticion para adjuntar el header Authorization
   let req = peticion;
   if (token && peticion.url.includes('/api/')) {
-    req = peticion.clone({
-      setHeaders: { Authorization: `Bearer ${token}` }
+    req = peticion.clone({ // Crear copia de la peticion original con el header Authorization
+      setHeaders: { Authorization: `Bearer ${token}` } 
     });
   }
 
+  // Devuelve token en la peticion y maneja errores de autenticacion
   return siguiente(req).pipe(
     catchError((error: HttpErrorResponse) => {
       // 401 = token invalido/expirado, 403 con "desactivada" = cuenta bloqueada
-      if (
-        error.status === 401 ||
-        (error.status === 403 && String(error.error?.error || '').toLowerCase().includes('desactivada'))
-      ) {
+      if (error.status === 401 || error.status === 403) {
         authService.cerrarSesion();
         router.navigate(['/login']);
       }
-      // throwError re-lanza el error para que el componente que origino la peticion
-      // tambien pueda reaccionar (ej: mostrar un toast de error)
+      // Re lanza el error para que otros interceptors o componentes puedan manejarlo si es necesario (toasts)
       return throwError(() => error);
     })
   );
