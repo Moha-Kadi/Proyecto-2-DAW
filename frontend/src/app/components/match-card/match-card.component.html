@@ -1,0 +1,46 @@
+<!-- Tarjeta de partido: escudos, nombres, resultado/hora -->
+<div class="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 min-h-[60px] transition-colors hover:bg-gray-50"
+  [class.bg-red-50/30]="partido.status === 'EN VIVO'">
+
+  <!-- Equipo local -->
+  <div class="flex items-center justify-end flex-1 gap-3 overflow-hidden text-right">
+    <span class="text-[0.95rem] font-medium text-gray-800 truncate max-w-[180px] max-sm:text-sm max-sm:max-w-[100px]">
+      {{ partido.teams?.home?.name }}
+    </span>
+    <div class="w-8 h-8 flex items-center justify-center shrink-0">
+      <img [src]="partido.teams?.home?.logo" [alt]="partido.teams?.home?.name" loading="lazy" class="max-w-full max-h-full object-contain">
+    </div>
+  </div>
+
+  <!-- Centro: resultado u hora -->
+  <div class="w-[100px] max-sm:w-20 flex flex-col items-center justify-center shrink-0 px-2.5">
+    @if (partido.status === 'POR JUGAR') {
+      <span class="text-sm font-semibold text-gray-500">{{ partido.start_time }}</span>
+    } @else {
+      <div class="flex items-center gap-1 text-lg font-bold text-gray-900"
+           [class.text-red-600]="partido.status === 'EN VIVO'">
+        <span>{{ partido.goals?.home }}</span>
+        <span class="opacity-50">-</span>
+        <span>{{ partido.goals?.away }}</span>
+      </div>
+      @if (partido.status === 'EN VIVO') {
+        <div class="flex items-center gap-1 mt-0.5">
+          <span class="text-xs font-bold text-red-600">{{ partido.minute }}</span>
+          <span class="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse"></span>
+        </div>
+      } @else {
+        <span class="text-[0.7rem] uppercase font-semibold text-gray-400 mt-0.5">Fin</span>
+      }
+    }
+  </div>
+
+  <!-- Equipo visitante -->
+  <div class="flex items-center justify-start flex-1 gap-3 overflow-hidden text-left">
+    <div class="w-8 h-8 flex items-center justify-center shrink-0">
+      <img [src]="partido.teams?.away?.logo" [alt]="partido.teams?.away?.name" loading="lazy" class="max-w-full max-h-full object-contain">
+    </div>
+    <span class="text-[0.95rem] font-medium text-gray-800 truncate max-w-[180px] max-sm:text-sm max-sm:max-w-[100px]">
+      {{ partido.teams?.away?.name }}
+    </span>
+  </div>
+</div>

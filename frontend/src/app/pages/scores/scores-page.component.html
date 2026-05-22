@@ -1,0 +1,67 @@
+<!-- Pagina de partidos con navegacion por calendario -->
+<div class="max-w-[1400px] mx-auto p-4 sm:p-6 min-h-screen bg-gray-50/30">
+
+  @if (!partidoSeleccionado()) {
+    <!-- Barra superior: navegacion de fecha -->
+    <div class="flex justify-center items-center gap-4 mb-6 sticky top-0 z-30 bg-gray-50/80 backdrop-blur-md py-2">
+      <div class="flex items-center justify-center gap-1 bg-white border border-gray-100 rounded-full p-1 shadow-sm">
+        <button (click)="diaAnterior()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <input type="date" class="text-xs font-bold text-gray-700 bg-transparent border-none p-0 outline-none cursor-pointer w-28 text-center"
+          [value]="formatoFecha" (change)="cambiarFecha($event)">
+        <button (click)="diaSiguiente()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Lista de ligas -->
+    <div class="flex flex-col gap-4">
+      @if (cargando()) {
+        <div class="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm">
+          <div class="w-12 h-12 border-4 border-gray-50 border-t-red-600 rounded-full animate-spin mb-4"></div>
+          <p class="text-xs font-black text-gray-400 uppercase tracking-[0.2em] italic">Actualizando partidos...</p>
+        </div>
+      }
+
+      @if (!cargando()) {
+        @for (league of ligas(); track league.name) {
+          @if (league.matches.length > 0) {
+            <app-league-container [liga]="league" (clicPartido)="clicPartido($event)"
+              class="block transition-all hover:translate-y-[-2px] duration-300"/>
+          } @else if (!league.esHoy && league.fechaProximos) {
+            <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+              <div class="flex items-center gap-3 pb-4 border-b border-gray-50 mb-4">
+                <img [src]="league.logo" [alt]="league.name" class="w-6 h-6 object-contain">
+                <span class="text-sm font-black text-gray-900 uppercase">{{ league.name }}</span>
+              </div>
+              <p class="text-xs font-bold text-gray-400">
+                No hay partidos programados. Proxima fecha: <strong class="text-red-600">{{ league.fechaProximos }}</strong>
+              </p>
+            </div>
+          }
+        }
+        @if (ligas().every(l => l.matches.length === 0)) {
+          <div class="flex flex-col items-center justify-center py-32 bg-white rounded-3xl border border-gray-100 shadow-sm text-center px-6">
+            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-8">
+              <svg class="w-10 h-10 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <h3 class="text-xl font-black text-gray-900 uppercase tracking-tighter mb-2">Sin partidos programados</h3>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">No se encontraron partidos</p>
+            <button (click)="irAHoy()"
+              class="px-8 py-3 bg-red-600 text-white rounded-xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-red-600/30 hover:scale-105 active:scale-95 transition-all">
+              Volver a hoy
+            </button>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

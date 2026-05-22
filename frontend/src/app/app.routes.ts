@@ -8,6 +8,8 @@ export const routes: Routes = [
   { path: 'login', loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent) },
   // Registro
   { path: 'registro', loadComponent: () => import('./pages/registro/register.component').then(m => m.RegisterComponent) },
+  // Partidos
+  { path: 'scores', loadComponent: () => import('./pages/scores/scores-page.component').then(m => m.ScoresPageComponent) },
   // Redireccion por defecto
   { path: '**', redirectTo: '' }
 ];

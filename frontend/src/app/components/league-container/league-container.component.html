@@ -1,0 +1,32 @@
+<!-- Acordeon de liga con bandera, nombre y lista de partidos -->
+<div class="mb-4 bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+  <button class="w-full flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 transition-colors border-none cursor-pointer text-left"
+    (click)="alternar()">
+    <div class="flex items-center gap-3">
+      <div class="flex-shrink-0 shadow-sm border border-gray-100 rounded-sm overflow-hidden bg-gray-50">
+        <img [src]="liga.flag" [alt]="liga.country" class="w-6 h-4 object-cover block" loading="lazy" />
+      </div>
+      <span class="text-sm font-medium text-gray-500">{{ liga.name }}</span>
+      <div class="w-5 h-5 flex flex-shrink-0 items-center justify-center">
+        <img [src]="liga.logo" [alt]="liga.name" class="w-full h-full object-contain opacity-80" loading="lazy" />
+      </div>
+    </div>
+    <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" [class.rotate-180]="expandido"
+      fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+
+  @if (expandido) {
+    <div class="border-t border-gray-100 bg-white">
+      @if (liga.esHoy === false) {
+        <div class="px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase text-center">
+          No hay partidos hoy. Proxima jornada: {{ liga.fechaProximos }}
+        </div>
+      }
+      @for (match of liga.matches; track match.id) {
+        <app-match-card [partido]="match" (click)="clicPartido.emit(match.id)" class="cursor-pointer block" />
+      }
+    </div>
+  }
+</div>
