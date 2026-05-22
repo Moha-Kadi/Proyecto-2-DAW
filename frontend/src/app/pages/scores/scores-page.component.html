@@ -64,5 +64,7 @@
         }
       }
     </div>
+  } @else {
+    <app-match-detail [partido]="partidoSeleccionado()" (cerrar)="cerrarDetalle()" />
   }
 </div>

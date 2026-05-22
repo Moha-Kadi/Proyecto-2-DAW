@@ -1,13 +1,14 @@
 // Pagina de resultados de partidos agrupados por liga
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { LeagueContainerComponent } from '../../components/league-container/league-container.component';
+import { MatchDetailComponent } from '../../components/match-detail/match-detail.component';
 import { FixturesService } from '../../services/fixtures.service';
 import { LIGAS_PRINCIPALES } from '../../services/ligas.service';
 
 @Component({
   selector: 'app-scores-page',
   standalone: true,
-  imports: [LeagueContainerComponent],
+  imports: [LeagueContainerComponent, MatchDetailComponent],
   templateUrl: './scores-page.component.html'
 })
 // Componente de la pagina de resultados, muestra los partidos agrupados por liga y permite filtrar por estado y fecha.
