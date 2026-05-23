@@ -1,0 +1,95 @@
+<!-- Panel de administracion: tabla de usuarios -->
+<div class="min-h-screen bg-slate-50/50 p-4 lg:p-8">
+  <div class="max-w-6xl mx-auto">
+
+    <div class="mb-8">
+      <h1 class="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+        <span class="w-1.5 h-8 bg-red-600 rounded-full"></span>Panel de Administracion
+      </h1>
+      <p class="text-slate-500 text-sm mt-1 font-medium">Gestiona los usuarios de la plataforma</p>
+    </div>
+
+    @if (cargando()) {
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-20 text-center">
+        <div class="inline-block w-10 h-10 border-4 border-slate-100 border-t-red-600 rounded-full animate-spin"></div>
+        <p class="text-xs font-black text-slate-400 uppercase tracking-widest mt-4">Cargando usuarios...</p>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="bg-red-50 border border-red-100 text-red-600 px-6 py-4 rounded-2xl mb-6 flex items-center gap-3">
+        <span class="font-bold text-sm">{{ error() }}</span>
+      </div>
+    }
+
+    @if (!cargando() && usuarios().length > 0) {
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-center border-collapse">
+            <thead>
+              <tr class="bg-slate-50/50 border-b border-slate-100">
+                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Usuario</th>
+                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Email</th>
+                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Rol</th>
+                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Estado</th>
+                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+              @for (usuario of usuarios(); track usuario._id) {
+                <tr class="group hover:bg-slate-50/30 transition-colors">
+                  <td class="px-6 py-4">
+                    <span class="text-sm font-bold text-slate-700">{{ usuario.account.username }}</span>
+                  </td>
+                  <td class="px-6 py-4 text-sm font-medium text-slate-500">{{ usuario.account.email }}</td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-full"
+                          [class.bg-purple-50]="usuario.account.rol === 'admin'"
+                          [class.text-purple-600]="usuario.account.rol === 'admin'"
+                          [class.bg-slate-100]="usuario.account.rol === 'user'"
+                          [class.text-slate-500]="usuario.account.rol === 'user'">
+                      {{ usuario.account.rol }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="text-xs font-bold"
+                          [class.text-green-600]="usuario.account.is_active"
+                          [class.text-red-600]="!usuario.account.is_active">
+                      {{ usuario.account.is_active ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center justify-center gap-3">
+                      @if (usuario.account.is_active) {
+                        <button (click)="toggleUsuario(usuario._id)"
+                          class="px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-red-200 text-red-600 bg-red-50 hover:bg-red-600 hover:text-white shadow-sm">
+                          Desactivar
+                        </button>
+                      } @else {
+                        <button (click)="toggleUsuario(usuario._id)"
+                          class="px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-green-200 text-green-600 bg-green-50 hover:bg-green-600 hover:text-white shadow-sm">
+                          Activar
+                        </button>
+                      }
+                      <button (click)="borrarUsuario(usuario._id)"
+                        class="px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-red-200 text-red-600 bg-red-50 hover:bg-red-600 hover:text-white shadow-sm">
+                        Borrar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    @if (!cargando() && usuarios().length === 0) {
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-20 text-center">
+        <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Sin usuarios</h3>
+        <p class="text-xs text-slate-400 mt-2">No se han encontrado usuarios registrados.</p>
+      </div>
+    }
+  </div>
+</div>
