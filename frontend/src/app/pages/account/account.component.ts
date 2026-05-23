@@ -105,7 +105,8 @@ export class AccountComponent implements OnInit {
 
     this.cargando.set(true);
     try {
-      await this.auth.actualizarCuenta(cambios);
+      const user = await this.auth.actualizarCuenta(cambios);
+      this.auth.actualizarUsuario(user);
       this.toast.exito('Perfil actualizado');
       // Si cambio la contraseña, cierra sesion para forzar re-login
       if (cambios['password']) {
