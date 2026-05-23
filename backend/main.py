@@ -7,6 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from routes.auth import router as auth_router
 from routes.fixtures import router as fixtures_router
 from routes.standings import router as standings_router
+from routes.admin import router as admin_router
 from config.config import db, ALLOWED_ORIGINS
 from dependencies.limitador import limitador
 
@@ -30,6 +31,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(fixtures_router)
 app.include_router(standings_router)
+app.include_router(admin_router)
 
 # Endpoints basicos
 @app.get("/")
