@@ -103,3 +103,11 @@ def test_perfil_con_token():
         r = cliente.get("/api/auth/perfil", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 200
     assert r.json()["account"]["username"] == "juan"
+
+
+# Admin
+
+def test_admin_sin_token():
+    """Sin token no se puede acceder al panel de admin."""
+    r = cliente.get("/api/admin/usuarios")
+    assert r.status_code == 403
